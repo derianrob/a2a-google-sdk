@@ -1,0 +1,30 @@
+{
+  "name": "a2a-cdk",
+  "version": "1.0.0",
+  "description": "sdk de google Este SDK reúne e implementa todas las funcionalidades clave presentadas por Google en su reciente lanzamiento de capacidades Agent-to-Agent (A2A)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run build"
+  },
+  "author": "derianrob",
+  "license": "ISC",
+  "dependencies": {
+    "@genkit-ai/googleai": "^1.8.0",
+    "@genkit-ai/vertexai": "^1.8.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "genkit": "^1.8.0"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
