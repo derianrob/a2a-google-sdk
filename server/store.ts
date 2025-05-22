@@ -1,12 +1,12 @@
 import fs from "fs/promises";
 import path from "path";
-import * as schema from "../schema.js";
-import { A2AError } from "./error.js";
+import * as schema from "../schema";
+import { A2AError } from "./error";
 import {
   getCurrentTimestamp,
   isArtifactUpdate,
   isTaskStatusUpdate,
-} from "./utils.js";
+} from "./utils";
 
 // Helper type for the simplified store
 export interface TaskAndHistory {

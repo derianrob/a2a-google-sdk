@@ -1,5 +1,5 @@
-import * as schema from "../schema.js";
-import { TaskStore } from "./store.js"; // Import TaskStore
+import * as schema from "../schema";
+import { TaskStore } from "./store"; // Import TaskStore
 
 /**
  * Context object provided to the TaskHandler.

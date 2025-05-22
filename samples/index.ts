@@ -3,10 +3,16 @@ import { createStudentServer } from "./agents/student";
 
 async function main() {
   try {
-    // Start both servers
+    // Create both servers
     const [financialAdvisorServer, studentServer] = await Promise.all([
       createFinancialAdvisorServer(),
       createStudentServer(),
+    ]);
+
+    // Start both servers
+    await Promise.all([
+      financialAdvisorServer.start(3001),
+      studentServer.start(3002),
     ]);
 
     console.log("Both agents are running and ready to communicate!");

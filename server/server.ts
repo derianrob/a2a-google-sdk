@@ -5,17 +5,17 @@ import express, {
   RequestHandler,
 } from "express";
 import cors, { CorsOptions } from "cors";
-import * as schema from "../schema.js";
+import * as schema from "../schema";
 // Import TaskAndHistory along with TaskStore implementations
-import { TaskStore, InMemoryTaskStore, TaskAndHistory } from "./store.js";
+import { TaskStore, InMemoryTaskStore, TaskAndHistory } from "./store";
 // Import TaskHandler and the original TaskContext to derive the new one
-import { TaskHandler, TaskContext as OldTaskContext } from "./handler.js";
-import { A2AError } from "./error.js";
+import { TaskHandler, TaskContext as OldTaskContext } from "./handler";
+import { A2AError } from "./error";
 import {
   getCurrentTimestamp,
   isTaskStatusUpdate,
   isArtifactUpdate,
-} from "./utils.js";
+} from "./utils";
 
 /**
  * Options for configuring the A2AServer.
