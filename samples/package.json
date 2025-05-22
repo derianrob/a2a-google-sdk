@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node index.ts",
-    "start:advisor": "ts-node agents/financial-advisor/index.ts",
-    "start:student": "ts-node agents/student/index.ts"
+    "start:summarizer": "ts-node agents/summari/index.ts",
+    "start:translator": "ts-node agents/translator/index.ts"
   },
   "keywords": [
     "a2a",

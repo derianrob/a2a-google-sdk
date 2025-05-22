@@ -143,14 +143,23 @@ async function createSummarizerServer() {
       url: `http://localhost:${summarizerConfig.port}`,
       version: "1.0.0",
       capabilities: {
-        streaming: true,
+        streaming: false,
         pushNotifications: false,
+        stateTransitionHistory: true,
       },
+      defaultInputModes: ["text"],
+      defaultOutputModes: ["text"],
+      provider: {
+        organization: "A2A Samples",
+        url: "https://github.com/yourusername/summarizer-agent",
+      },
+      authentication: null,
       skills: [
         {
           id: "text-summarization",
           name: "Text Summarization",
           description: "Capacidad para resumir textos a sus ideas principales",
+          tags: ["summarization", "text-processing", "nlp"],
         },
       ],
     },

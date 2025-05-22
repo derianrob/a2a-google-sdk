@@ -143,14 +143,23 @@ async function createTranslatorServer() {
       url: `http://localhost:${translatorConfig.port}`,
       version: "1.0.0",
       capabilities: {
-        streaming: true,
+        streaming: false,
         pushNotifications: false,
+        stateTransitionHistory: true,
       },
+      defaultInputModes: ["text"],
+      defaultOutputModes: ["text"],
+      provider: {
+        organization: "A2A Samples",
+        url: "https://github.com/yourusername/your-agent",
+      },
+      authentication: null,
       skills: [
         {
           id: "translation",
           name: "Translation",
           description: "Capacidad para traducir textos del español al inglés",
+          tags: ["translation", "spanish", "english"],
         },
       ],
     },
