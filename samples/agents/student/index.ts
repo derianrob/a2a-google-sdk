@@ -5,7 +5,7 @@ import {
   TaskState,
 } from "../../../index";
 import { OpenAIService } from "../../services/openai.service";
-import { studentConfig } from "./config";
+import { translatorConfig } from "./config";
 import * as dotenv from "dotenv";
 import path from "path";
 
@@ -17,18 +17,19 @@ if (!process.env.OPENAI_API_KEY) {
   process.exit(1);
 }
 
-async function createStudentServer() {
+async function createTranslatorServer() {
   const openAIService = new OpenAIService(process.env.OPENAI_API_KEY!);
 
   // Create the OpenAI Assistant
   const assistant = await openAIService.createAssistant(
-    studentConfig.name,
-    studentConfig.instructions
+    translatorConfig.name,
+    translatorConfig.instructions
   );
 
   // Define the task handler
   const taskHandler: TaskHandler = async function* (context) {
-    const message = context.task.status.message;
+    console.log("Translator task handler called", context);
+    const message = context.userMessage;
 
     if (!message?.parts?.length) {
       yield {
@@ -49,11 +50,14 @@ async function createStudentServer() {
         .join(" ") || "No text provided";
 
     // Create or get thread ID from metadata
-    if (!context.task.metadata?.threadId) {
+    let threadId: string | undefined = context.task.metadata
+      ?.threadId as string;
+    if (!threadId) {
       const thread = await openAIService.createThread();
+      threadId = thread.id;
       context.task.metadata = {
         ...(context.task.metadata || {}),
-        threadId: thread.id,
+        threadId: threadId,
       };
     }
 
@@ -62,11 +66,9 @@ async function createStudentServer() {
       state: "working" as TaskState,
       message: {
         role: "agent",
-        parts: [{ type: "text", text: "Thinking..." }],
+        parts: [{ type: "text", text: "Traduciendo el texto..." }],
       },
     };
-
-    const threadId = context.task.metadata.threadId as string;
 
     // Add message to thread
     await openAIService.addMessageToThread(threadId, messageText);
@@ -86,7 +88,7 @@ async function createStudentServer() {
           state: "failed" as TaskState,
           message: {
             role: "agent",
-            parts: [{ type: "text", text: "Failed to process your request." }],
+            parts: [{ type: "text", text: "No se pudo traducir el texto." }],
           },
         };
         return;
@@ -98,7 +100,7 @@ async function createStudentServer() {
       const responseText =
         assistantMessage?.content[0]?.type === "text"
           ? assistantMessage.content[0].text.value
-          : "No response available.";
+          : "No se pudo generar la traducción.";
 
       yield {
         state: "completed" as TaskState,
@@ -114,7 +116,7 @@ async function createStudentServer() {
           state: "canceled" as TaskState,
           message: {
             role: "agent",
-            parts: [{ type: "text", text: "The task was cancelled." }],
+            parts: [{ type: "text", text: "La tarea fue cancelada." }],
           },
         };
       } else {
@@ -127,9 +129,9 @@ async function createStudentServer() {
   return new A2AServer(taskHandler, {
     taskStore: new InMemoryTaskStore(),
     card: {
-      name: studentConfig.name,
-      description: studentConfig.description,
-      url: `http://localhost:${studentConfig.port}`,
+      name: translatorConfig.name,
+      description: translatorConfig.description,
+      url: `http://localhost:${translatorConfig.port}`,
       version: "1.0.0",
       capabilities: {
         streaming: true,
@@ -137,26 +139,26 @@ async function createStudentServer() {
       },
       skills: [
         {
-          id: "student-queries",
-          name: "Student Questions",
-          description:
-            "Asks relevant questions about personal finance and seeks guidance",
+          id: "translation",
+          name: "Translation",
+          description: "Capacidad para traducir textos del español al inglés",
         },
       ],
     },
   });
 }
 
-export { createStudentServer };
+export { createTranslatorServer };
 
-// Start the server
+// Start the server if this file is run directly
 if (require.main === module) {
-  createStudentServer()
+  createTranslatorServer()
     .then((server) => {
-      console.log(`Student server running on port ${studentConfig.port}`);
+      server.start(translatorConfig.port);
+      console.log(`Translator server running on port ${translatorConfig.port}`);
     })
     .catch((error) => {
-      console.error("Failed to start Student server:", error);
+      console.error("Failed to start Translator server:", error);
       process.exit(1);
     });
 }

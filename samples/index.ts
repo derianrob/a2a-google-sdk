@@ -1,24 +1,32 @@
-import { createFinancialAdvisorServer } from "./agents/financial-advisor";
-import { createStudentServer } from "./agents/student";
+import { createSummarizerServer } from "./agents/financial-advisor";
+import { createTranslatorServer } from "./agents/student";
+import { createReformulatorServer } from "./agents/coordinator";
 
 async function main() {
   try {
-    // Create both servers
-    const [financialAdvisorServer, studentServer] = await Promise.all([
-      createFinancialAdvisorServer(),
-      createStudentServer(),
-    ]);
+    // Create all servers
+    const [summarizerServer, translatorServer, reformulatorServer] =
+      await Promise.all([
+        createSummarizerServer(),
+        createTranslatorServer(),
+        createReformulatorServer(),
+      ]);
 
-    // Start both servers
+    // Start all servers
     await Promise.all([
-      financialAdvisorServer.start(3001),
-      studentServer.start(3002),
+      summarizerServer.start(3001),
+      translatorServer.start(3002),
+      reformulatorServer.start(3003),
     ]);
 
-    console.log("Both agents are running and ready to communicate!");
+    console.log("All agents are running and ready to communicate!");
     console.log("Use the following endpoints to interact with the agents:");
     console.log("Financial Advisor: http://localhost:3001");
     console.log("Student: http://localhost:3002");
+    console.log("Coordinator: http://localhost:3003");
+    console.log(
+      "\nExample: Send a POST request to http://localhost:3003 with:"
+    );
   } catch (error) {
     console.error("Failed to start servers:", error);
     process.exit(1);

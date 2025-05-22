@@ -5,7 +5,7 @@ import {
   TaskState,
 } from "../../../index";
 import { OpenAIService } from "../../services/openai.service";
-import { financialAdvisorConfig } from "./config";
+import { summarizerConfig } from "./config";
 import * as dotenv from "dotenv";
 import path from "path";
 
@@ -17,18 +17,19 @@ if (!process.env.OPENAI_API_KEY) {
   process.exit(1);
 }
 
-async function createFinancialAdvisorServer() {
+async function createSummarizerServer() {
   const openAIService = new OpenAIService(process.env.OPENAI_API_KEY!);
 
   // Create the OpenAI Assistant
   const assistant = await openAIService.createAssistant(
-    financialAdvisorConfig.name,
-    financialAdvisorConfig.instructions
+    summarizerConfig.name,
+    summarizerConfig.instructions
   );
 
   // Define the task handler
   const taskHandler: TaskHandler = async function* (context) {
-    const message = context.task.status.message;
+    console.log("Summarizer task handler called", context);
+    const message = context.userMessage;
 
     if (!message?.parts?.length) {
       yield {
@@ -49,11 +50,14 @@ async function createFinancialAdvisorServer() {
         .join(" ") || "No text provided";
 
     // Create or get thread ID from metadata
-    if (!context.task.metadata?.threadId) {
+    let threadId: string | undefined = context.task.metadata
+      ?.threadId as string;
+    if (!threadId) {
       const thread = await openAIService.createThread();
+      threadId = thread.id;
       context.task.metadata = {
         ...(context.task.metadata || {}),
-        threadId: thread.id,
+        threadId: threadId,
       };
     }
 
@@ -62,11 +66,9 @@ async function createFinancialAdvisorServer() {
       state: "working" as TaskState,
       message: {
         role: "agent",
-        parts: [{ type: "text", text: "Thinking..." }],
+        parts: [{ type: "text", text: "Resumiendo el texto..." }],
       },
     };
-
-    const threadId = context.task.metadata.threadId as string;
 
     // Add message to thread
     await openAIService.addMessageToThread(threadId, messageText);
@@ -86,7 +88,7 @@ async function createFinancialAdvisorServer() {
           state: "failed" as TaskState,
           message: {
             role: "agent",
-            parts: [{ type: "text", text: "Failed to process your request." }],
+            parts: [{ type: "text", text: "No se pudo procesar el texto." }],
           },
         };
         return;
@@ -98,7 +100,7 @@ async function createFinancialAdvisorServer() {
       const responseText =
         assistantMessage?.content[0]?.type === "text"
           ? assistantMessage.content[0].text.value
-          : "No response available.";
+          : "No se pudo generar el resumen.";
 
       yield {
         state: "completed" as TaskState,
@@ -114,7 +116,7 @@ async function createFinancialAdvisorServer() {
           state: "canceled" as TaskState,
           message: {
             role: "agent",
-            parts: [{ type: "text", text: "The task was cancelled." }],
+            parts: [{ type: "text", text: "La tarea fue cancelada." }],
           },
         };
       } else {
@@ -127,9 +129,9 @@ async function createFinancialAdvisorServer() {
   return new A2AServer(taskHandler, {
     taskStore: new InMemoryTaskStore(),
     card: {
-      name: financialAdvisorConfig.name,
-      description: financialAdvisorConfig.description,
-      url: `http://localhost:${financialAdvisorConfig.port}`,
+      name: summarizerConfig.name,
+      description: summarizerConfig.description,
+      url: `http://localhost:${summarizerConfig.port}`,
       version: "1.0.0",
       capabilities: {
         streaming: true,
@@ -137,27 +139,26 @@ async function createFinancialAdvisorServer() {
       },
       skills: [
         {
-          id: "financial-advice",
-          name: "Financial Advice",
-          description: "Provides professional financial guidance and planning",
+          id: "text-summarization",
+          name: "Text Summarization",
+          description: "Capacidad para resumir textos a sus ideas principales",
         },
       ],
     },
   });
 }
 
-export { createFinancialAdvisorServer };
+export { createSummarizerServer };
 
-// Start the server
+// Start the server if this file is run directly
 if (require.main === module) {
-  createFinancialAdvisorServer()
+  createSummarizerServer()
     .then((server) => {
-      console.log(
-        `Financial Advisor server running on port ${financialAdvisorConfig.port}`
-      );
+      server.start(summarizerConfig.port);
+      console.log(`Summarizer server running on port ${summarizerConfig.port}`);
     })
     .catch((error) => {
-      console.error("Failed to start Financial Advisor server:", error);
+      console.error("Failed to start Summarizer server:", error);
       process.exit(1);
     });
 }

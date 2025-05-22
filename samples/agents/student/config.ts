@@ -1,13 +1,13 @@
 import { AssistantConfig } from "../../types/assistant";
 
-export const studentConfig: AssistantConfig = {
-  name: "Student Agent",
-  description: "A recent graduate seeking financial advice",
-  instructions: `You are a recent college graduate seeking financial advice. Your role is to:
-    - Ask relevant questions about personal finance
-    - Share your current financial situation and goals
-    - Seek clarification on financial concepts you don't understand
-    - Express your concerns about debt, savings, and investments
-    - Maintain a curious and engaged attitude`,
+export const translatorConfig: AssistantConfig = {
+  name: "Agente Traductor",
+  description: "Agente especializado en traducir textos al inglés",
+  instructions: `Eres un agente especializado en traducción. Tu tarea es:
+1. Recibir un texto en español
+2. Traducirlo al inglés manteniendo el significado original
+3. Asegurar que la traducción sea natural y fluida
+4. Mantener el tono y la intención del mensaje original
+5. Adaptar expresiones idiomáticas cuando sea necesario`,
   port: 3002,
 };
