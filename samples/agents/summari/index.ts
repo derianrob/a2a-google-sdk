@@ -5,7 +5,7 @@ import {
   TaskState,
 } from "../../../index";
 import { OpenAIService } from "../../services/openai.service";
-import { translatorConfig } from "./config";
+import { summarizerConfig } from "./config";
 import * as dotenv from "dotenv";
 import path from "path";
 
@@ -17,13 +17,13 @@ if (!process.env.OPENAI_API_KEY) {
   process.exit(1);
 }
 
-async function createTranslatorServer() {
+async function createSummarizerServer() {
   const openAIService = new OpenAIService(process.env.OPENAI_API_KEY!);
 
   // Create the OpenAI Assistant
   const assistant = await openAIService.createAssistant(
-    translatorConfig.name,
-    translatorConfig.instructions
+    summarizerConfig.name,
+    summarizerConfig.instructions
   );
 
   // Define the task handler
@@ -48,7 +48,7 @@ async function createTranslatorServer() {
         .map((part) => part.text)
         .join(" ") || "No text provided";
 
-    console.log("\n🌍 Agente Traductor - Texto a Traducir:");
+    console.log("\n🎯 Agente Resumidor - Texto Recibido:");
     console.log("--------------------------------");
     console.log(messageText);
     console.log("--------------------------------\n");
@@ -70,7 +70,7 @@ async function createTranslatorServer() {
       state: "working" as TaskState,
       message: {
         role: "agent",
-        parts: [{ type: "text", text: "Traduciendo el texto..." }],
+        parts: [{ type: "text", text: "Resumiendo el texto..." }],
       },
     };
 
@@ -92,7 +92,7 @@ async function createTranslatorServer() {
           state: "failed" as TaskState,
           message: {
             role: "agent",
-            parts: [{ type: "text", text: "No se pudo traducir el texto." }],
+            parts: [{ type: "text", text: "No se pudo procesar el texto." }],
           },
         };
         return;
@@ -104,9 +104,9 @@ async function createTranslatorServer() {
       const responseText =
         assistantMessage?.content[0]?.type === "text"
           ? assistantMessage.content[0].text.value
-          : "No se pudo generar la traducción.";
+          : "No se pudo generar el resumen.";
 
-      console.log("\n🌍 Agente Traductor - Traducción Generada:");
+      console.log("\n🎯 Agente Resumidor - Resumen Generado:");
       console.log("--------------------------------");
       console.log(responseText);
       console.log("--------------------------------\n");
@@ -138,9 +138,9 @@ async function createTranslatorServer() {
   return new A2AServer(taskHandler, {
     taskStore: new InMemoryTaskStore(),
     card: {
-      name: translatorConfig.name,
-      description: translatorConfig.description,
-      url: `http://localhost:${translatorConfig.port}`,
+      name: summarizerConfig.name,
+      description: summarizerConfig.description,
+      url: `http://localhost:${summarizerConfig.port}`,
       version: "1.0.0",
       capabilities: {
         streaming: true,
@@ -148,26 +148,18 @@ async function createTranslatorServer() {
       },
       skills: [
         {
-          id: "translation",
-          name: "Translation",
-          description: "Capacidad para traducir textos del español al inglés",
+          id: "text-summarization",
+          name: "Text Summarization",
+          description: "Capacidad para resumir textos a sus ideas principales",
         },
       ],
     },
   });
 }
 
-export { createTranslatorServer };
-
-// Start the server if this file is run directly
-if (require.main === module) {
-  createTranslatorServer()
-    .then((server) => {
-      server.start(translatorConfig.port);
-      console.log(`Translator server running on port ${translatorConfig.port}`);
-    })
-    .catch((error) => {
-      console.error("Failed to start Translator server:", error);
-      process.exit(1);
-    });
-}
+createSummarizerServer().then((server) => {
+  server.start(summarizerConfig.port);
+  console.log(`Summarizer server running on port ${summarizerConfig.port}`);
+  console.log("[SummarizerAgent] Server started on http://localhost:3002");
+  console.log("Press Ctrl+C to stop the server");
+});
