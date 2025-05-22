@@ -16,6 +16,7 @@ export type {
   TaskYieldUpdate,
 } from "./server/handler";
 export { InMemoryTaskStore, FileStore } from "./server/store";
+export * from "./schema";
 
 // Cliente
 export { A2AClient } from "./client/client";
