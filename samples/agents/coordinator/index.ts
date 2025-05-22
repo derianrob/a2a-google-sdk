@@ -35,7 +35,6 @@ async function createReformulatorServer() {
 
   // Define the task handler
   const taskHandler: TaskHandler = async function* (context) {
-    console.log("Reformulator task handler called", context);
     const message = context.userMessage;
 
     if (!message?.parts?.length) {
@@ -55,6 +54,11 @@ async function createReformulatorServer() {
         .filter((part) => part.type === "text")
         .map((part) => part.text)
         .join(" ") || "No text provided";
+
+    console.log("\n📝 Agente Reformulador - Texto Original:");
+    console.log("================================");
+    console.log(messageText);
+    console.log("================================\n");
 
     try {
       // Step 1: Get summary from Summarizer
@@ -78,6 +82,11 @@ async function createReformulatorServer() {
         ?.parts?.[0] as TextPart;
       const summaryText = summaryPart?.text || "No se pudo obtener el resumen.";
 
+      console.log("\n📝 Agente Reformulador - Resumen Recibido:");
+      console.log("================================");
+      console.log(summaryText);
+      console.log("================================\n");
+
       // Step 2: Get translation from Translator
       yield {
         state: "working" as TaskState,
@@ -99,6 +108,11 @@ async function createReformulatorServer() {
         ?.parts?.[0] as TextPart;
       const translationText =
         translationPart?.text || "No se pudo obtener la traducción.";
+
+      console.log("\n📝 Agente Reformulador - Traducción Recibida:");
+      console.log("================================");
+      console.log(translationText);
+      console.log("================================\n");
 
       // Step 3: Reformulate with friendly tone
       yield {
@@ -152,6 +166,11 @@ async function createReformulatorServer() {
         assistantMessage?.content[0]?.type === "text"
           ? assistantMessage.content[0].text.value
           : "No se pudo reformular el texto.";
+
+      console.log("\n📝 Agente Reformulador - Versión Final Amigable:");
+      console.log("================================");
+      console.log(reformulatedText);
+      console.log("================================\n");
 
       // Return final combined response
       yield {

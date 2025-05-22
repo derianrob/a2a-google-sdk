@@ -28,7 +28,6 @@ async function createTranslatorServer() {
 
   // Define the task handler
   const taskHandler: TaskHandler = async function* (context) {
-    console.log("Translator task handler called", context);
     const message = context.userMessage;
 
     if (!message?.parts?.length) {
@@ -48,6 +47,11 @@ async function createTranslatorServer() {
         .filter((part) => part.type === "text")
         .map((part) => part.text)
         .join(" ") || "No text provided";
+
+    console.log("\n🌍 Agente Traductor - Texto a Traducir:");
+    console.log("--------------------------------");
+    console.log(messageText);
+    console.log("--------------------------------\n");
 
     // Create or get thread ID from metadata
     let threadId: string | undefined = context.task.metadata
@@ -101,6 +105,11 @@ async function createTranslatorServer() {
         assistantMessage?.content[0]?.type === "text"
           ? assistantMessage.content[0].text.value
           : "No se pudo generar la traducción.";
+
+      console.log("\n🌍 Agente Traductor - Traducción Generada:");
+      console.log("--------------------------------");
+      console.log(responseText);
+      console.log("--------------------------------\n");
 
       yield {
         state: "completed" as TaskState,

@@ -28,7 +28,6 @@ async function createSummarizerServer() {
 
   // Define the task handler
   const taskHandler: TaskHandler = async function* (context) {
-    console.log("Summarizer task handler called", context);
     const message = context.userMessage;
 
     if (!message?.parts?.length) {
@@ -48,6 +47,11 @@ async function createSummarizerServer() {
         .filter((part) => part.type === "text")
         .map((part) => part.text)
         .join(" ") || "No text provided";
+
+    console.log("\n🎯 Agente Resumidor - Texto Recibido:");
+    console.log("--------------------------------");
+    console.log(messageText);
+    console.log("--------------------------------\n");
 
     // Create or get thread ID from metadata
     let threadId: string | undefined = context.task.metadata
@@ -101,6 +105,11 @@ async function createSummarizerServer() {
         assistantMessage?.content[0]?.type === "text"
           ? assistantMessage.content[0].text.value
           : "No se pudo generar el resumen.";
+
+      console.log("\n🎯 Agente Resumidor - Resumen Generado:");
+      console.log("--------------------------------");
+      console.log(responseText);
+      console.log("--------------------------------\n");
 
       yield {
         state: "completed" as TaskState,
