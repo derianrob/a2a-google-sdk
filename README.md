@@ -34,7 +34,7 @@ npm install a2a-cdk
 ### Creación de un servidor A2A
 
 ```typescript
-import { A2AServer, InMemoryTaskStore } from "a2a-cdk";
+import { A2AServer, InMemoryTaskStore } from "a2a-sdk";
 
 // Crear un servidor A2A
 const server = new A2AServer({
@@ -86,7 +86,7 @@ server.listen(3000, () => {
 ### Uso del cliente A2A
 
 ```typescript
-import { A2AClient } from "a2a-cdk";
+import { A2AClient } from "a2a-sdk";
 
 // Crear un cliente A2A
 const client = new A2AClient({
