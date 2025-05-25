@@ -62,6 +62,77 @@ El Agent Card es un documento JSON que describe la identidad y capacidades de un
 }
 ```
 
+### Ejemplo Completo de Agent Card
+
+```json
+{
+  "provider": {
+    "name": "MyAssistant",
+    "version": "1.0.0",
+    "description": "A helpful AI assistant with multiple capabilities",
+    "url": "https://api.myassistant.com/a2a"
+  },
+  "capabilities": {
+    "streaming": true,
+    "multiTurn": true,
+    "maxTurnCount": 10,
+    "fileSupport": {
+      "maxSizeBytes": 10485760,
+      "supportedTypes": ["image/png", "image/jpeg", "application/pdf"]
+    },
+    "supportedLanguages": ["en", "es"],
+    "maxResponseTime": 30000
+  },
+  "security": {
+    "type": "http",
+    "scheme": "bearer",
+    "bearerFormat": "JWT",
+    "description": "Use JWT token for authentication"
+  },
+  "skills": [
+    {
+      "name": "imageAnalysis",
+      "description": "Can analyze and describe images",
+      "parameters": {
+        "supportedFormats": ["png", "jpg"],
+        "maxResolution": "4096x4096"
+      }
+    },
+    {
+      "name": "textTranslation",
+      "description": "Can translate text between supported languages",
+      "parameters": {
+        "sourceLangs": ["en", "es"],
+        "targetLangs": ["en", "es"],
+        "maxTextLength": 5000
+      }
+    },
+    {
+      "name": "documentProcessing",
+      "description": "Can process and analyze PDF documents",
+      "parameters": {
+        "maxPages": 50,
+        "supportedTypes": ["application/pdf"],
+        "features": ["text-extraction", "summary", "qa"]
+      }
+    }
+  ],
+  "endpoints": {
+    "base": "https://api.myassistant.com/a2a",
+    "messageSend": "/message/send",
+    "messageStream": "/message/stream",
+    "tasksGet": "/tasks/get",
+    "tasksCancel": "/tasks/cancel"
+  },
+  "metadata": {
+    "vendor": "MyCompany Inc.",
+    "website": "https://myassistant.com",
+    "documentation": "https://docs.myassistant.com",
+    "support": "support@myassistant.com"
+  }
+}
+```
+
 ## Types
 
 ### Task
