@@ -1,411 +1,157 @@
-# A2A Protocol Documentation
+# A2A SDK for JavaScript/TypeScript
 
-## Table of Contents
+Este SDK proporciona una implementación del protocolo Agent-to-Agent (A2A) de Google en JavaScript/TypeScript. Permite crear agentes que pueden comunicarse entre sí siguiendo el estándar A2A.
 
-- [Agent Card](#agent-card)
-- [Types](#types)
-  - [Task](#task)
-  - [Message](#message)
-- [Important Methods](#important-methods)
-- [Message vs Task](#message-vs-task)
-- [Flow Examples](#flow-examples)
+## Cumplimiento del Patrón A2A
 
-## Agent Card
+El SDK implementa todos los requisitos fundamentales del protocolo A2A:
 
-El Agent Card es un documento JSON que describe la identidad y capacidades de un servidor A2A. Contiene los siguientes tipos principales:
+### 1. Descubrimiento de Agentes ✅
 
-### AgentProvider
+```typescript
+// Endpoint de descubrimiento estándar
+GET /.well-known/agent.json
 
-```json
+// Ejemplo de Agent Card
 {
-  "name": "MyAssistant",
+  "name": "Mi Agente",
+  "description": "Descripción del agente",
+  "url": "http://localhost:3000",
   "version": "1.0.0",
-  "description": "A helpful AI assistant",
-  "url": "https://api.myassistant.com/a2a"
-}
-```
-
-### AgentCapabilities
-
-```json
-{
-  "streaming": true,
-  "multiTurn": true,
-  "maxTurnCount": 10,
-  "fileSupport": {
-    "maxSizeBytes": 10485760,
-    "supportedTypes": ["image/png", "image/jpeg"]
-  }
-}
-```
-
-### SecurityScheme
-
-```json
-{
-  "type": "http",
-  "scheme": "bearer",
-  "bearerFormat": "JWT"
-}
-```
-
-### AgentSkill
-
-```json
-{
-  "name": "imageAnalysis",
-  "description": "Can analyze and describe images",
-  "parameters": {
-    "supportedFormats": ["png", "jpg"],
-    "maxResolution": "4096x4096"
-  }
-}
-```
-
-### Ejemplo Completo de Agent Card
-
-```json
-{
-  "provider": {
-    "name": "MyAssistant",
-    "version": "1.0.0",
-    "description": "A helpful AI assistant with multiple capabilities",
-    "url": "https://api.myassistant.com/a2a"
-  },
   "capabilities": {
-    "streaming": true,
-    "multiTurn": true,
-    "maxTurnCount": 10,
-    "fileSupport": {
-      "maxSizeBytes": 10485760,
-      "supportedTypes": ["image/png", "image/jpeg", "application/pdf"]
-    },
-    "supportedLanguages": ["en", "es"],
-    "maxResponseTime": 30000
+    "streaming": true
+  }
+}
+```
+
+### 2. Métodos RPC Requeridos ✅
+
+- `message/send`: Envío de mensajes entre agentes
+- `tasks/get`: Consulta del estado de tareas
+- `tasks/cancel`: Cancelación de tareas en curso
+
+### 3. Tipos de Respuesta ✅
+
+```typescript
+// Respuesta Inmediata
+{
+  kind: "message",
+  role: "agent",
+  parts: [{ kind: "text", text: "Respuesta inmediata" }]
+}
+
+// Respuesta Basada en Tareas
+{
+  kind: "task",
+  id: "task-id",
+  status: {
+    state: "working" | "completed" | "error",
+    progress: { percentage: number, message: string }
+  }
+}
+```
+
+### 4. Gestión de Tareas ✅
+
+- Creación y seguimiento de tareas
+- Actualización de estado
+- Consulta de progreso
+
+### 5. Formato de Mensajes ✅
+
+```typescript
+{
+  role: "user" | "agent",
+  parts: [
+    {
+      kind: "text",
+      text: string
+    }
+  ]
+}
+```
+
+### 6. Manejo de Errores JSON-RPC ✅
+
+```typescript
+{
+  jsonrpc: "2.0",
+  id: string,
+  error: {
+    code: number,
+    message: string
+  }
+}
+```
+
+## Instalación
+
+```bash
+npm install @alegradev/a2a-sdk
+```
+
+## Uso Básico
+
+### Crear un Servidor A2A
+
+```typescript
+import { A2AServer, A2AServerConfig } from "@alegradev/a2a-sdk";
+
+const config: A2AServerConfig = {
+  card: {
+    name: "Mi Agente",
+    description: "Un agente simple",
+    url: "http://localhost:3000",
+    version: "1.0.0",
   },
-  "security": {
-    "type": "http",
-    "scheme": "bearer",
-    "bearerFormat": "JWT",
-    "description": "Use JWT token for authentication"
-  },
-  "skills": [
-    {
-      "name": "imageAnalysis",
-      "description": "Can analyze and describe images",
-      "parameters": {
-        "supportedFormats": ["png", "jpg"],
-        "maxResolution": "4096x4096"
-      }
-    },
-    {
-      "name": "textTranslation",
-      "description": "Can translate text between supported languages",
-      "parameters": {
-        "sourceLangs": ["en", "es"],
-        "targetLangs": ["en", "es"],
-        "maxTextLength": 5000
-      }
-    },
-    {
-      "name": "documentProcessing",
-      "description": "Can process and analyze PDF documents",
-      "parameters": {
-        "maxPages": 50,
-        "supportedTypes": ["application/pdf"],
-        "features": ["text-extraction", "summary", "qa"]
-      }
-    }
-  ],
-  "endpoints": {
-    "base": "https://api.myassistant.com/a2a",
-    "messageSend": "/message/send",
-    "messageStream": "/message/stream",
-    "tasksGet": "/tasks/get",
-    "tasksCancel": "/tasks/cancel"
-  },
-  "metadata": {
-    "vendor": "MyCompany Inc.",
-    "website": "https://myassistant.com",
-    "documentation": "https://docs.myassistant.com",
-    "support": "support@myassistant.com"
-  }
-}
+  port: 3000,
+};
+
+const handler = async (message) => {
+  return {
+    kind: "message",
+    role: "agent",
+    parts: [{ kind: "text", text: "¡Hola!" }],
+  };
+};
+
+const server = new A2AServer(handler, config);
+server.start();
 ```
 
-## Types
+### Crear un Cliente A2A
 
-### Task
+```typescript
+import { A2AClient } from "@alegradev/a2a-sdk";
 
-Un Task representa una unidad de trabajo y tiene la siguiente estructura:
+const client = new A2AClient("http://localhost:3000");
 
-```json
-{
-  "id": "task-123",
-  "contextId": "ctx-456",
-  "status": {
-    "state": "working",
-    "timestamp": "2024-03-20T10:00:00Z",
-    "progress": {
-      "percentage": 45,
-      "message": "Processing..."
-    }
-  },
-  "artifacts": [
-    {
-      "artifactId": "art-001",
-      "parts": [
-        {
-          "type": "text",
-          "text": "Result content..."
-        }
-      ]
-    }
-  ],
-  "kind": "task"
-}
+// Enviar mensaje
+const response = await client.sendMessage({
+  role: "user",
+  parts: [{ kind: "text", text: "Hola" }],
+});
+
+// Consultar estado de tarea
+const taskStatus = await client.getTaskStatus("task-id");
 ```
 
-### Message
+## Características
 
-Un Message representa una comunicación directa:
+- ✅ Implementación completa del protocolo A2A
+- ✅ Soporte para TypeScript
+- ✅ Manejo de tareas asíncronas
+- ✅ Gestión de errores JSON-RPC
+- ✅ Comunicación bidireccional entre agentes
 
-```json
-{
-  "messageId": "msg-123",
-  "contextId": "ctx-456",
-  "parts": [
-    {
-      "type": "text",
-      "text": "Hello, how can I help?"
-    }
-  ],
-  "kind": "message"
-}
-```
+## Documentación
 
-## Important Methods
+Para más detalles sobre la implementación y uso del SDK, consulta la [documentación del servidor](src/server/README.md).
 
-### message/send
+## Contribuir
 
-Método principal para enviar mensajes al agente.
+Las contribuciones son bienvenidas. Por favor, asegúrate de actualizar las pruebas según corresponda.
 
-**Request:**
+## Licencia
 
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "message/send",
-  "params": {
-    "message": {
-      "role": "user",
-      "parts": [
-        {
-          "type": "text",
-          "text": "Hello!"
-        }
-      ],
-      "messageId": ""
-    }
-  }
-}
-```
-
-### tasks/get
-
-Método para consultar el estado de una tarea.
-
-**Request:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "tasks/get",
-  "params": {
-    "id": "task-123"
-  }
-}
-```
-
-### tasks/cancel
-
-Método para cancelar una tarea en curso.
-
-**Request:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "tasks/cancel",
-  "params": {
-    "id": "task-123"
-  }
-}
-```
-
-## Message vs Task
-
-### Diferencias Clave
-
-1. **Kind: "message"**
-
-- Respuesta inmediata
-- No tiene campo status
-- No requiere polling
-- Contiene directamente los parts con la respuesta
-
-2. **Kind: "task"**
-
-- Para operaciones largas
-- Tiene campo status
-- Requiere polling con tasks/get
-- Puede mostrar progreso
-
-### Estados de Tarea
-
-- `working`: Tarea en proceso
-- `completed`: Tarea finalizada
-- `error`: Error en el procesamiento
-- `input_required`: Necesita más información
-
-## Flow Examples
-
-### Flujo 1: Respuesta Rápida (sin polling)
-
-```json
-// Cliente envía
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "message/send",
-  "params": {
-    "message": {
-      "role": "user",
-      "parts": [
-        {
-          "type": "text",
-          "text": "tell me a joke"
-        }
-      ],
-      "messageId": ""
-    }
-  }
-}
-
-// Servidor responde inmediatamente
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "messageId": "msg-456",
-    "contextId": "ctx-789",
-    "parts": [
-      {
-        "type": "text",
-        "text": "Why did the chicken cross the road? To get to the other side!"
-      }
-    ],
-    "kind": "message"
-  }
-}
-```
-
-### Flujo 2: Tarea Larga (con polling)
-
-```json
-// Cliente envía
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "message/send",
-  "params": {
-    "message": {
-      "role": "user",
-      "parts": [
-        {
-          "type": "text",
-          "text": "analiza este documento largo"
-        }
-      ],
-      "messageId": ""
-    }
-  }
-}
-
-// Servidor responde (inicio de tarea)
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "id": "task-123",
-    "contextId": "ctx-789",
-    "status": {
-      "state": "working",
-      "timestamp": "2024-03-20T10:00:00Z"
-    },
-    "kind": "task"
-  }
-}
-
-// Cliente hace polling
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "method": "tasks/get",
-  "params": {
-    "id": "task-123"
-  }
-}
-
-// Servidor responde al polling (completado)
-{
-  "jsonrpc": "2.0",
-  "id": 2,
-  "result": {
-    "id": "task-123",
-    "contextId": "ctx-789",
-    "status": {
-      "state": "completed",
-      "timestamp": "2024-03-20T10:01:00Z"
-    },
-    "artifacts": [
-      {
-        "artifactId": "art-001",
-        "parts": [
-          {
-            "type": "text",
-            "text": "Análisis completo del documento..."
-          }
-        ]
-      }
-    ],
-    "kind": "task"
-  }
-}
-```
-
-### Cuándo usar Polling
-
-1. **NO usar polling cuando:**
-
-- La respuesta tiene `kind: "message"`
-- No hay campo `status` en la respuesta
-- Los `parts` están disponibles inmediatamente
-
-2. **SÍ usar polling cuando:**
-
-- La respuesta tiene `kind: "task"`
-- Hay campo `status` con `state: "working"`
-- No hay `parts` o `artifacts` en la respuesta inicial
-
-### Seguimiento de Tarea
-
-El seguimiento de tareas se puede hacer de dos formas:
-
-1. Con `messageId` para respuestas tipo message
-2. Con `taskId` para respuestas tipo task
-
-El servidor mantiene internamente el mapeo entre ambos tipos de IDs, por lo que `tasks/get` funciona con cualquiera de los dos.
+[MIT](LICENSE)
