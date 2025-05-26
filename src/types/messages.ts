@@ -13,6 +13,7 @@ export interface Message {
   role: "user" | "assistant";
   parts: MessagePart[];
   messageId: string;
+  contextId: string;
 }
 
 export interface TaskStatus {
