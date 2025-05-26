@@ -1,5 +1,5 @@
 export interface MessagePart {
-  type: "text" | "file" | "data";
+  kind: "text" | "file" | "data";
   text?: string;
   file?: {
     name: string;
