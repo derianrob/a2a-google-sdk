@@ -4,48 +4,30 @@ import { AgentCard } from "../src/types/agent-card";
 
 // Ejemplo de Agent Card
 const agentCard: AgentCard = {
-  provider: {
-    name: "SimpleBot",
-    version: "1.0.0",
-    description: "A simple A2A bot example",
-    url: "http://localhost:3000",
-  },
+  name: "SimpleBot",
+  description: "A simple A2A bot example",
+  url: "http://localhost:3000",
+  version: "1.0.0",
   capabilities: {
     streaming: false,
-    multiTurn: true,
-    maxTurnCount: 10,
-    fileSupport: {
-      maxSizeBytes: 1024 * 1024, // 1MB
-      supportedTypes: ["text/plain"],
-    },
+    pushNotifications: false,
+    stateTransitionHistory: true,
   },
-  security: {
-    type: "none",
-    scheme: "none",
-    bearerFormat: "none",
+  defaultInputModes: ["text"],
+  defaultOutputModes: ["text"],
+  provider: {
+    organization: "Example Corp",
+    url: "https://example.com",
   },
+  authentication: null,
   skills: [
     {
-      name: "chat",
+      id: "chat",
+      name: "Simple Chat",
       description: "Simple chat capabilities",
-      parameters: {
-        maxLength: 1000,
-      },
+      tags: ["chat", "text"],
     },
   ],
-  endpoints: {
-    base: "http://localhost:3000",
-    messageSend: "/",
-    messageStream: "/stream",
-    tasksGet: "/",
-    tasksCancel: "/",
-  },
-  metadata: {
-    vendor: "Example Corp",
-    website: "https://example.com",
-    documentation: "https://example.com/docs",
-    support: "support@example.com",
-  },
 };
 
 // Handler simple que procesa mensajes

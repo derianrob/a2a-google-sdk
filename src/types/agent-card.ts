@@ -1,28 +1,23 @@
 export interface AgentProvider {
-  name: string;
-  version: string;
-  description: string;
+  organization: string;
   url: string;
 }
 
 export interface FileSupport {
-  maxSizeBytes: number;
-  supportedTypes: string[];
+  maxSizeBytes?: number;
+  supportedTypes?: string[];
 }
 
 export interface AgentCapabilities {
   streaming: boolean;
-  multiTurn: boolean;
-  maxTurnCount: number;
-  fileSupport: FileSupport;
-  supportedLanguages?: string[];
-  maxResponseTime?: number;
+  pushNotifications: boolean;
+  stateTransitionHistory: boolean;
 }
 
 export interface SecurityScheme {
-  type: string;
-  scheme: string;
-  bearerFormat: string;
+  type?: string;
+  scheme?: string;
+  bearerFormat?: string;
   description?: string;
 }
 
@@ -31,31 +26,43 @@ export interface SkillParameter {
 }
 
 export interface AgentSkill {
+  id: string;
   name: string;
   description: string;
-  parameters: SkillParameter;
+  tags: string[];
 }
 
 export interface Endpoints {
-  base: string;
-  messageSend: string;
-  messageStream: string;
-  tasksGet: string;
-  tasksCancel: string;
+  base?: string;
+  messageSend?: string;
+  messageStream?: string;
+  tasksGet?: string;
+  tasksCancel?: string;
 }
 
 export interface Metadata {
-  vendor: string;
-  website: string;
-  documentation: string;
-  support: string;
+  vendor?: string;
+  website?: string;
+  documentation?: string;
+  support?: string;
 }
 
 export interface AgentCard {
-  provider: AgentProvider;
+  name: string;
+  description: string;
+  url: string;
+  version: string;
   capabilities: AgentCapabilities;
-  security: SecurityScheme;
+  defaultInputModes: string[];
+  defaultOutputModes: string[];
+  provider: AgentProvider;
+  authentication: null | {
+    type: string;
+    scheme: string;
+    description?: string;
+  };
   skills: AgentSkill[];
-  endpoints: Endpoints;
-  metadata: Metadata;
+  endpoints?: Endpoints;
+  metadata?: Metadata;
+  fileSupport?: FileSupport;
 }

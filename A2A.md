@@ -3,6 +3,8 @@
 ## Table of Contents
 
 - [Agent Card](#agent-card)
+  - [Campos Obligatorios](#campos-obligatorios)
+  - [Campos Opcionales](#campos-opcionales)
 - [Types](#types)
   - [Task](#task)
   - [Message](#message)
@@ -12,124 +14,109 @@
 
 ## Agent Card
 
-El Agent Card es un documento JSON que describe la identidad y capacidades de un servidor A2A. Contiene los siguientes tipos principales:
+El Agent Card es un documento JSON que describe la identidad y capacidades de un servidor A2A.
 
-### AgentProvider
+### Campos Obligatorios
 
-```json
+```typescript
 {
-  "name": "MyAssistant",
-  "version": "1.0.0",
-  "description": "A helpful AI assistant",
-  "url": "https://api.myassistant.com/a2a"
+  // Información básica del agente
+  name: string;
+  description: string;
+  url: string;
+  version: string;
+
+  // Capacidades del agente
+  capabilities: {
+    streaming: boolean;
+    pushNotifications: boolean;
+    stateTransitionHistory: boolean;
+  };
+
+  // Modos de entrada/salida
+  defaultInputModes: string[];
+  defaultOutputModes: string[];
+
+  // Información del proveedor
+  provider: {
+    organization: string;
+    url: string;
+  };
+
+  // Autenticación (puede ser null)
+  authentication: null | {
+    type: string;
+    scheme: string;
+    description?: string;
+  };
+
+  // Habilidades del agente
+  skills: Array<{
+    id: string;
+    name: string;
+    description: string;
+    tags: string[];
+  }>;
 }
 ```
 
-### AgentCapabilities
+### Campos Opcionales
 
-```json
+```typescript
 {
-  "streaming": true,
-  "multiTurn": true,
-  "maxTurnCount": 10,
-  "fileSupport": {
-    "maxSizeBytes": 10485760,
-    "supportedTypes": ["image/png", "image/jpeg"]
-  }
-}
-```
+  // Soporte para archivos
+  fileSupport?: {
+    maxSizeBytes?: number;
+    supportedTypes?: string[];
+  };
 
-### SecurityScheme
+  // Endpoints del agente
+  endpoints?: {
+    base?: string;
+    messageSend?: string;
+    messageStream?: string;
+    tasksGet?: string;
+    tasksCancel?: string;
+  };
 
-```json
-{
-  "type": "http",
-  "scheme": "bearer",
-  "bearerFormat": "JWT"
-}
-```
-
-### AgentSkill
-
-```json
-{
-  "name": "imageAnalysis",
-  "description": "Can analyze and describe images",
-  "parameters": {
-    "supportedFormats": ["png", "jpg"],
-    "maxResolution": "4096x4096"
-  }
+  // Metadatos adicionales
+  metadata?: {
+    vendor?: string;
+    website?: string;
+    documentation?: string;
+    support?: string;
+  };
 }
 ```
 
 ### Ejemplo Completo de Agent Card
 
-```json
+```typescript
 {
-  "provider": {
-    "name": "MyAssistant",
-    "version": "1.0.0",
-    "description": "A helpful AI assistant with multiple capabilities",
-    "url": "https://api.myassistant.com/a2a"
-  },
+  "name": "Agente Traductor",
+  "description": "Agente especializado en traducir textos al inglés",
+  "url": "http://localhost:1201",
+  "version": "1.0.0",
   "capabilities": {
-    "streaming": true,
-    "multiTurn": true,
-    "maxTurnCount": 10,
-    "fileSupport": {
-      "maxSizeBytes": 10485760,
-      "supportedTypes": ["image/png", "image/jpeg", "application/pdf"]
-    },
-    "supportedLanguages": ["en", "es"],
-    "maxResponseTime": 30000
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": true
   },
-  "security": {
-    "type": "http",
-    "scheme": "bearer",
-    "bearerFormat": "JWT",
-    "description": "Use JWT token for authentication"
+  "defaultInputModes": ["text"],
+  "defaultOutputModes": ["text"],
+  "provider": {
+    "organization": "A2A Samples",
+    "url": "https://github.com/yourusername/your-agent"
   },
+  "authentication": null,
   "skills": [
     {
-      "name": "imageAnalysis",
-      "description": "Can analyze and describe images",
-      "parameters": {
-        "supportedFormats": ["png", "jpg"],
-        "maxResolution": "4096x4096"
-      }
-    },
-    {
-      "name": "textTranslation",
-      "description": "Can translate text between supported languages",
-      "parameters": {
-        "sourceLangs": ["en", "es"],
-        "targetLangs": ["en", "es"],
-        "maxTextLength": 5000
-      }
-    },
-    {
-      "name": "documentProcessing",
-      "description": "Can process and analyze PDF documents",
-      "parameters": {
-        "maxPages": 50,
-        "supportedTypes": ["application/pdf"],
-        "features": ["text-extraction", "summary", "qa"]
-      }
+      "id": "translation",
+      "name": "Translation",
+      "description": "Capacidad para traducir textos del español al inglés",
+      "tags": ["translation", "spanish", "english"]
     }
-  ],
-  "endpoints": {
-    "base": "https://api.myassistant.com/a2a",
-    "messageSend": "/message/send",
-    "messageStream": "/message/stream",
-    "tasksGet": "/tasks/get",
-    "tasksCancel": "/tasks/cancel"
-  },
-  "metadata": {
-    "vendor": "MyCompany Inc.",
-    "website": "https://myassistant.com",
-    "documentation": "https://docs.myassistant.com",
-    "support": "support@myassistant.com"
-  }
+  ]
 }
 ```
 
