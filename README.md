@@ -87,7 +87,7 @@ GET /.well-known/agent.json
 ## Instalación
 
 ```bash
-npm install @alegradev/a2a-sdk
+npm install a2a-sdk-google
 ```
 
 ## Uso Básico
@@ -95,7 +95,7 @@ npm install @alegradev/a2a-sdk
 ### Crear un Servidor A2A
 
 ```typescript
-import { A2AServer, A2AServerConfig } from "@alegradev/a2a-sdk";
+import { A2AServer, A2AServerConfig } from "a2a-sdk-google";
 
 const config: A2AServerConfig = {
   card: {
@@ -122,7 +122,7 @@ server.start();
 ### Crear un Cliente A2A
 
 ```typescript
-import { A2AClient } from "@alegradev/a2a-sdk";
+import { A2AClient } from "a2a-sdk-google";
 
 const client = new A2AClient("http://localhost:3000");
 

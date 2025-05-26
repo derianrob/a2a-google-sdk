@@ -1,6 +1,6 @@
 {
-  "name": "a2a-sdk",
-  "version": "1.0.0",
+  "name": "a2a-sdk-google",
+  "version": "beta.0.0.1",
   "description": "JavaScript/TypeScript SDK for Google's A2A Protocol",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
