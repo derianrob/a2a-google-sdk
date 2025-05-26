@@ -1,6 +1,6 @@
 {
   "name": "a2a-sdk-google",
-  "version": "0.0.1-beta",
+  "version": "0.0.3-beta",
   "description": "JavaScript/TypeScript SDK for Google's A2A Protocol",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,7 +14,8 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "start": "tsc && node dist/examples/simple-server.js"
   },
   "keywords": [
     "a2a",

@@ -106,7 +106,10 @@ export class A2AServer {
         res.json({
           jsonrpc: "2.0",
           id: req.body.id,
-          result: response,
+          result: {
+            ...response,
+            contextId,
+          },
         });
       } else {
         // Respuesta inmediata

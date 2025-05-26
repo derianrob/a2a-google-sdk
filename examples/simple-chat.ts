@@ -16,7 +16,7 @@ async function main() {
     const response = await client.sendMessage({
       parts: [
         {
-          type: "text",
+          kind: "text",
           text: "Tell me a joke",
         },
       ],

@@ -53,7 +53,7 @@ async function messageHandler(message: Message): Promise<A2AResponse> {
     contextId: "ctx-456",
     parts: [
       {
-        type: "text",
+        kind: "text",
         text: `Echo: ${text}`,
       },
     ],
