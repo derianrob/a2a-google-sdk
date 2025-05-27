@@ -20,7 +20,8 @@ async function main() {
           text: "Tell me a joke",
         },
       ],
-      messageId: "",
+      messageId: "derian-test",
+      contextId: "derian-test",
     });
 
     // Manejar la respuesta según su tipo

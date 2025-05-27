@@ -48,7 +48,7 @@ export class A2AClient {
       return this.agentCard;
     }
 
-    const response = await this.axios.get<AgentCard>("/");
+    const response = await this.axios.get<AgentCard>("/.well-known/agent.json");
     this.agentCard = response.data;
     return this.agentCard;
   }
