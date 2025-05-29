@@ -10,7 +10,7 @@ export interface MessagePart {
 }
 
 export interface Message {
-  role: "user" | "assistant";
+  role: "user" | "agent";
   parts: MessagePart[];
   messageId: string;
   contextId: string;
@@ -20,7 +20,7 @@ export interface Message {
 }
 
 export interface TaskStatus {
-  state: "working" | "completed" | "error" | "input_required";
+  state: "working" | "completed" | "error" | "input-required";
   timestamp: string;
   progress?: {
     percentage: number;

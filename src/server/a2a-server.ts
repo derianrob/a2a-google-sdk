@@ -94,19 +94,6 @@ export class A2AServer {
       const response = await this.handler(message);
 
       if (response.kind === "task") {
-        // Registrar la tarea en el TaskManager
-        this.taskManager.createTask(response.contextId);
-        this.taskManager.updateTask(response.id, {
-          state: response.status.state,
-          progress: response.status.progress,
-          result: response.artifacts,
-        });
-
-        // Procesar la tarea de forma asíncrona si está en estado "working"
-        if (response.status.state === "working") {
-          this.processTask(response.id, message).catch(console.error);
-        }
-
         res.json({
           jsonrpc: "2.0",
           id: req.body.id,

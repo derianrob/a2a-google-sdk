@@ -14,7 +14,7 @@ export interface A2AHandler {
 export interface Task {
   id: string;
   contextId: string;
-  state: "working" | "completed" | "error" | "input_required";
+  state: "working" | "completed" | "error" | "input-required";
   progress?: {
     percentage: number;
     message: string;
