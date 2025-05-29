@@ -128,28 +128,25 @@ Un Task representa una unidad de trabajo y tiene la siguiente estructura:
 
 ```json
 {
-  "id": "task-123",
-  "contextId": "ctx-456",
+  "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+  "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
   "status": {
-    "state": "working",
-    "timestamp": "2024-03-20T10:00:00Z",
-    "progress": {
-      "percentage": 45,
-      "message": "Processing..."
-    }
-  },
-  "artifacts": [
-    {
-      "artifactId": "art-001",
+    "state": "input-required",
+    "message": {
+      "role": "agent",
       "parts": [
         {
           "type": "text",
-          "text": "Result content..."
+          "text": "Message"
         }
-      ]
-    }
-  ],
-  "kind": "task"
+      ],
+      "messageId": "c2e1b2dd-f200-4b04-bc22-1b0c65a1aad2",
+      "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+      "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
+    },
+    "timestamp": "2024-03-15T10:10:00Z"
+  },
+  "history": []
 }
 ```
 
@@ -274,7 +271,7 @@ Método para cancelar una tarea en curso.
       "parts": [
         {
           "type": "text",
-          "text": "tell me a joke"
+          "text": "Traduceme el siguiente texto: Hola mundo"
         }
       ],
       "messageId": ""
@@ -285,14 +282,14 @@ Método para cancelar una tarea en curso.
 // Servidor responde inmediatamente
 {
   "jsonrpc": "2.0",
-  "id": 1,
+  "id": 2,
   "result": {
     "messageId": "msg-456",
     "contextId": "ctx-789",
     "parts": [
       {
         "type": "text",
-        "text": "Why did the chicken cross the road? To get to the other side!"
+        "text": "Hello world"
       }
     ],
     "kind": "message"
@@ -311,14 +308,9 @@ Método para cancelar una tarea en curso.
   "params": {
     "message": {
       "role": "user",
-      "parts": [
-        {
-          "type": "text",
-          "text": "analiza este documento largo"
-        }
-      ],
-      "messageId": ""
-    }
+      "parts": [{ "type": "text", "text": "Me gustaría reservar un vuelo." }]
+    },
+    "messageId": ""
   }
 }
 
@@ -327,23 +319,47 @@ Método para cancelar una tarea en curso.
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "task-123",
-    "contextId": "ctx-789",
+    "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
-      "state": "working",
-      "timestamp": "2024-03-20T10:00:00Z"
+      "state": "input-required",
+      "message": {
+        "role": "agent",
+        "parts": [
+          {
+            "type": "text",
+            "text": "¡Claro que puedo ayudarte! ¿Adónde te gustaría volar y desde dónde? ¿Y cuáles son tus fechas de viaje preferidas?"
+          }
+        ],
+        "messageId": "c2e1b2dd-f200-4b04-bc22-1b0c65a1aad2",
+        "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
+      },
+      "timestamp": "2024-03-15T10:10:00Z"
     },
+    "history": [],
     "kind": "task"
   }
 }
 
-// Cliente hace polling
+// Cliente
 {
   "jsonrpc": "2.0",
   "id": 2,
-  "method": "tasks/get",
+  "method": "message/send",
   "params": {
-    "id": "task-123"
+    "message": {
+      "role": "user",
+      "parts": [
+        {
+          "type": "text",
+          "text": "Quiero volar desde Nueva York (JFK) a Londres (LHR) alrededor del 10 de octubre, regresando el 17 de octubre."
+        }
+      ],
+      "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+      "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+      "messageId": "0db1d6c4-3976-40ed-b9b8-0043ea7a03d3"
+    },
   }
 }
 
@@ -352,24 +368,42 @@ Método para cancelar una tarea en curso.
   "jsonrpc": "2.0",
   "id": 2,
   "result": {
-    "id": "task-123",
-    "contextId": "ctx-789",
+    "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "completed",
-      "timestamp": "2024-03-20T10:01:00Z"
-    },
-    "artifacts": [
-      {
-        "artifactId": "art-001",
+      "message": {
+        "role": "agent",
         "parts": [
           {
             "type": "text",
-            "text": "Análisis completo del documento..."
+            "text": "Bien, encontré un vuelo para ti. Confirmación XYZ123. Los detalles están en el artefacto."
+          }
+        ]
+      }
+    },
+    "artifacts": [
+      {
+        "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
+        "name": "FlightItinerary.json",
+        "parts": [
+          {
+            "type": "data",
+            "data": {
+              "confirmationId": "XYZ123",
+              "from": "JFK",
+              "to": "LHR",
+              "departure": "2024-10-10T18:00:00Z",
+              "arrival": "2024-10-11T06:00:00Z",
+              "returnDeparture": "..."
+            }
           }
         ]
       }
     ],
-    "kind": "task"
+    "history": [],
+    "kind": "task",
+    "metadata": {}
   }
 }
 ```

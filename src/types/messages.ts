@@ -14,6 +14,9 @@ export interface Message {
   parts: MessagePart[];
   messageId: string;
   contextId: string;
+  taskId?: string;
+  history?: History[];
+  artifacts?: Artifact[];
 }
 
 export interface TaskStatus {
@@ -23,11 +26,7 @@ export interface TaskStatus {
     percentage: number;
     message: string;
   };
-}
-
-export interface Artifact {
-  artifactId: string;
-  parts: MessagePart[];
+  message?: Message;
 }
 
 export interface TaskResponse {
@@ -35,6 +34,7 @@ export interface TaskResponse {
   contextId: string;
   status: TaskStatus;
   artifacts?: Artifact[];
+  history?: Message[];
   kind: "task";
 }
 
@@ -52,6 +52,13 @@ export interface JsonRpcRequest {
   id: number | string;
   method: string;
   params: Record<string, any>;
+}
+
+export interface Artifact {
+  artifactId: string;
+  name?: string;
+  description?: string;
+  parts: MessagePart[];
 }
 
 export interface JsonRpcResponse {
